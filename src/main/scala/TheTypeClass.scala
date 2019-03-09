@@ -58,11 +58,17 @@ object Json {
     w.write(value)
 
   def main(args: Array[String]): Unit = {
+    val y = 0f
     import JsonWriterInstances._
     import JsonSyntax._
-    println( Person("Dave", "dave@example.com").toJson)
-    println( Option(Person("Dave", "dave@example.com")).toJson)
-    val person:Option[Person] = None
-    println( Option[Person](null).toJson)
+    println(Person("Dave", "dave@example.com").toJson)
+    println(Option(Person("Dave", "dave@example.com")).toJson)
+    val person: Option[Person] = None
+    println(Option[Person](null).toJson)
   }
+}
+
+//Example of higher kinded type
+trait Functor[F[_]] {
+  def map[A, B](fa: F[A])(f: A => B): F[B]
 }
