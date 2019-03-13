@@ -87,15 +87,30 @@ object SimplifiedFunctorDefinition {
   }
 
   import cats.Functor
+
   implicit class FunctorOps[F[_], A](src: F[A]) {
     def map[B](func: A => B)
               (implicit functor: Functor[F]): F[B] =
       functor.map(src)(func)
   }
 
+  //  Sometimes we need to inject dependencies into our instances. For example, if we had to define a custom Functor for
+  //  Future (another hypothetical example—Cats provides one in cats.instances.future) we would need to account for the
+  //  implicit ExecutionContext parameter on future.map. We can’t add extra parameters to functor.map so we have to account
+  //  for the dependency when we create the instance:
+  import scala.concurrent.{Future, ExecutionContext}
+  implicit def futureFunctor
+  (implicit ec: ExecutionContext): Functor[Future] =
+    new Functor[Future] {
+      def map[A, B](value: Future[A])(func: A => B): Future[B] =
+        value.map(func)
+    }
+  //  Whenever we summon a Functor for Future, either directly using Func- tor.apply or indirectly via the map extension method,
+  //  the compiler will locate futureFunctor by implicit resolution and recursively search for an ExecutionContext at the call site
 }
 
 object CatsFunctors {
+
   import cats.Functor
 
   def main(args: Array[String]): Unit = {
@@ -103,7 +118,7 @@ object CatsFunctors {
     functorsOnFunctions
 
     import cats.instances.option._ // for Functor
-    import cats.instances.list._   // for Functor
+    import cats.instances.list._ // for Functor
     println(doMath(Option(20)))
     println(doMath(List(1, 2, 3)))
   }
@@ -127,7 +142,7 @@ object CatsFunctors {
 
   def functorsOnFunctions = {
     import cats.instances.function._ // for Functor
-    import cats.syntax.functor._     // for map
+    import cats.syntax.functor._ // for map
     val func1 = (a: Int) => a + 1
     val func2 = (a: Int) => a * 2
     val func3 = (a: Int) => a + "!"
@@ -136,11 +151,11 @@ object CatsFunctors {
   }
 
   //The main method provided by the syntax for Functor is map. It’s difficult to demonstrate this with Options and Lists as they have their own built-in map methods and the Scala compiler will always prefer a built-in method over an extension method. We’ll work around this with two examples.
-  //This 􏰀me we’ll abstract over functors so we’re not working with any par􏰀cular concrete type
+  //This ti􏰀me we’ll abstract over functors so we’re not working with any parti􏰀cular concrete type
   def doMath[F[_]](start: F[Int])
                   //This implicit is required to bring Functor[F] into implicit scope, for FunctorOps - map requiring this implicit. Refer to SimplifiedFunctorDefinition object.
                   (implicit functor: Functor[F]): F[Int] = {
-    import cats.syntax.functor._     // for map
+    import cats.syntax.functor._ // for map
     start.map(n => n + 1 * 2)
   }
 }
