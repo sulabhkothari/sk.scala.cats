@@ -100,3 +100,28 @@ object InvariantFunctor {
   implicit def boxCodec[A](implicit c: Codec[A]): Codec[Box[A]] = c.imap(Box(_), _.value)
 
 }
+
+object CatsVariantFunctors {
+  def main(args: Array[String]): Unit = {
+    import cats.Contravariant
+    import cats.Show
+    import cats.instances.string._
+    //import cats.syntax.show._
+
+    val showString = Show[String]
+    val showSymbol = Contravariant[Show].contramap(showString)((sym:Symbol) => s"""'${sym.name}""")
+
+    println(showSymbol.show('sk))
+
+    import cats.syntax.contravariant._ // for contramap
+    println(sho]
+    wString.contramap[Symbol](x=>s"''${x.name}''").show('dave))
+
+    import cats.Invariant
+    import cats.Monoid
+    val monoidString = Monoid[String]
+    implicit val monoidSymbol = Invariant[Monoid].imap(monoidString)(Symbol(_))(_.name)
+    import cats.syntax.semigroup._
+    println('legendary |+| 'weapon |+| 'here)
+  }
+}
