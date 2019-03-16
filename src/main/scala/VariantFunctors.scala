@@ -114,8 +114,7 @@ object CatsVariantFunctors {
     println(showSymbol.show('sk))
 
     import cats.syntax.contravariant._ // for contramap
-    println(sho]
-    wString.contramap[Symbol](x=>s"''${x.name}''").show('dave))
+    println(showString.contramap[Symbol](x=>s"''${x.name}''").show('dave))
 
     import cats.Invariant
     import cats.Monoid
